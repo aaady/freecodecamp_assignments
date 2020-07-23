@@ -163,7 +163,7 @@ div.icon, h2, p {
     border-radius: 3px;
 }
 
-.product > .item {
+.product>.item {
     background-color: #ddd;
     color: black;
     padding: 15px 0;
@@ -172,19 +172,19 @@ div.icon, h2, p {
     font-weight: 700;
 }
 
-.product > h2 {
+.product>h2 {
     margin-top: 15px;
 }
 
-.product > ol {
+.product>ol {
     margin: 15px 0;
 }
 
-.product > ol > li {
+.product>ol>li {
     padding: 5px 0;
 }
 
-.product > button {
+.product>button {
     border: 0;
     margin: 15px 0;
     background-color: #f1c40f;
@@ -240,7 +240,7 @@ footer {
     margin: 0 auto;
 }
 
-footer > ul {
+footer>ul {
     display: flex;
     justify-content: flex-end;
 
@@ -249,7 +249,7 @@ footer > ul {
     box-sizing: border-box;
 }
 
-footer > ul > li {
+footer>ul>li {
     padding: 0 10px;
     list-style: none;
 
@@ -262,7 +262,7 @@ a {
     text-decoration: none;
 }
 
-footer > span {
+footer>span {
     margin-top: 5px;
     display: flex;
     justify-content: flex-end;
