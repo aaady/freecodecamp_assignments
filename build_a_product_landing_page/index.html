@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build a Product Landing Page</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+  <header id="header">
+    <div class="logo">
+      <img id="header-img" src="./images/Death_Note_logo.svg" alt="Logo">
+    </div>
+    <nav id="nav-bar">
+      <ul>
+        <li><a class="nav-link" href="#feature">Features</a></li>
+        <li><a class="nav-link" href="#it_works">It Works</a></li>
+        <li><a class="nav-link" href="#inquiry">Inquiry</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <section id="image">
+        <div class="note">
+          <img id="note-img" src="./images/Death_Note,_Book.svg" alt="Note">
+        </div>
+      </section>
+    
+      <section id="feature">
+        <div class="grid">
+          <div class="icon">
+            <i class="fa fa-3x fa-info"></i>
+          </div>
+          <div class="desc">
+            <h2>How to use it</h2>
+            <p>The human whose name is written in this note shall die.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="icon">
+            <i class="fa fa-3x fa-diamond"></i>
+          </div>
+          <div class="desc">
+            <h2>Premium materials</h2>
+            <p>Our notes use the special papaer which is sourced locally. This will increase the longevity of your purchase.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="icon">
+            <i class="fa fa-3x fa-truck"></i>
+          </div>
+          <div class="desc">
+            <h2>Free and fast shipping</h2>
+            <p>We make sure you recieve your death note by courier. We also provide free returns if you are not satisfied.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="icon">
+            <i class="fa fa-3x fa-battery-full" aria-hidden="true"></i>
+          </div>
+          <div class="desc">
+            <h2>Quality assurance</h2>
+            <p>For every purchase you make, we will ensure there are no damages or faults.</p>
+          </div>
+        </div>  
+      </section>
+
+      <section id="it_works">
+        <div class="video">
+          <video id="video" src="./videos/it_works.mp4" poster="./videos/it_works.png" controls>Video</video>
+        </div>
+      </section>
+
+      <section id="inquiry">
+        <div class="inquiry">
+          <form id="form" action="https://www.freecodecamp.com/email-submit" method="post">
+            <div class="form-group">
+                <label for="email" id="email-label">Email: </label>
+                <input id="email" type="email"  name="email" class="form-control" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <label for="comments"></label><textarea id="comments" name="comments" cols="50" rows="10">Comments</textarea>
+            </div>
+            <div class="form-group">
+                <input id="submit" type="submit" value="Submit">
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+    
+  <!-- Run the tests -->
+  <script src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js'></script>
+</body>
+</html>
