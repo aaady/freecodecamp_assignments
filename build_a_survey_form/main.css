@@ -5,14 +5,41 @@
     --color-green: #37af65;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
     font-size: 1.6rem;
     line-height: 1.5;
     text-align: center;
-    color: #333;
+    color: white;
     margin: 0;
 }
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    background: var(--color-darkblue);
+    background-image: linear-gradient(
+        115deg,
+        rgba(58, 58, 158, 0.8),
+        rgba(136, 136, 206, 0.7)
+      ),
+      url(./images/The_Carina_Nebula_imaged_by_the_VLT_Survey_Telescope.jpg);
+      /* url(https://cdn.freecodecamp.org/testable-projects-fcc/images/survey-form-background.jpeg); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
 
 div {
     display: block;
@@ -70,7 +97,6 @@ form {
 }
 
 label {
-    color: white;
     display: flex;
     align-items: center;
     font-size: 1.5rem;
