@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a Technical Documentation Page</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <nav id="navbar">
+        <header>React interactivity: Events and state</header>
+        <ul>
+            <li><a class="nav-link" href="#Handling_events">Handling events</a></li>
+            <li><a class="nav-link" href="#Callback_props">Callback props</a></li>
+            <li><a class="nav-link" href="#State_and_the_useState_hook">State and the useState hook</a></li>
+            <li><a class="nav-link" href="#Putting_it_all_together:_Adding_a_task">Putting it all together: Adding a task</a></li>
+            <li><a class="nav-link" href="#Detour:_counting_tasks">Detour: counting tasks</a></li>
+            <li><a class="nav-link" href="#Completing_a_task">Completing a task</a></li>
+            <li><a class="nav-link" href="#Deleting_a_task">Deleting a task</a></li>
+            <li><a class="nav-link" href="#Deleting_tasks_from_state_and_UI">Deleting tasks from state and UI</a></li>
+            <li><a class="nav-link" href="#Reference">Reference</a></li>
+        </ul>
+    </nav>
+    <main id="main-doc">
+        <section id="Handling_events" class="main-section">
+            <header>Handling events</header>
+            <article>
+                <p>
+                    If you've only written vanilla JavaScript before now, you might be used to having a separate JavaScript file, where you query for some DOM nodes and attach listeners to them. For example:
+                </p>
+                <pre><code>
+    const btn = document.querySelector('button');
+
+    btn.addEventListener('click', () => {
+        alert("hi!");
+    });
+                </code></pre>
+                <p>
+                    In React, we write event handlers directly on the elements in our JSX, like this:
+                </p>
+                <pre><code>
+    &lt;button
+        type="button"
+        onClick={() => alert("hi!")}
+    &gt;
+        Say hi!  
+    &lt;/button&gt;
+                </code></pre>
+                <blockquote>
+                    <strong>Note:</strong> This may seem counter-intuitive regarding best-practice advice that tends to advise against use of inline event handlers on HTML, but remember that JSX is actually part of your JavaScript.
+                </blockquote>
+                <p>
+                    In the above example, we're adding an onClick attribute to the &lt;button&gt; element. The value of that attribute is a function that triggers a simple alert.
+                </p>
+                <p>
+                    The onClick attribute has special meaning here: it tells React to run a given function when the user clicks on the button. There are a couple of other things to note:
+                </p>
+                <ul>
+                    <li>The camel-cased nature of onClick is important — JSX will not recognize onclick (again, it is already used in JavaScript for a specific purpose, which is related but different — standard onclick handler properties).</li>
+                    <li>All browser events follow this format in JSX – on, followed by the name of the event.</li>
+                </ul>
+                <p>
+                    Let's apply this to our app, starting in the Form.js component.
+                </p>
+                <h3>Handling form submission</h3>
+                <p>
+                    At the top of the Form() component function, create a function named handleSubmit(). This function should prevent the default behavior of the submit event. After that, it should trigger an alert(), which can say whatever you’d like. It should end up looking something like this:
+                </p>
+                <pre><code>
+    function handleSubmit(e) {
+        e.preventDefault();
+        alert('Hello, world!');
+    }
+                </code></pre>
+                <p>
+                    To use this function, add an onSubmit attribute to the &lt;form&gt; element, and set its value to the handleSubmit function:
+                </p>
+                <pre><code>
+    &lt;form onSubmit={handleSubmit}&gt;
+                </code></pre>
+                <p>
+                    Now if you head back to your browser and click on the "Add" button, your browser will show you an alert dialog with the words "Hello, world!" — or whatever you chose to write there.
+                </p>
+            </article>
+        </section>
+        <section id="Callback_props" class="main-section">
+            <header>Callback props</header>
+            <article>
+                <p>
+                    In React applications, interactivity is rarely confined to just one component: events that happen in one component will affect other parts of the app. When we start giving ourselves the power to make new tasks, things that happen in the &lt;Form /&gt; component will affect the list rendered in &lt;App /&gt;.
+                </p>
+                <p>
+                    We want our handleSubmit() function to ultimately help us create a new task, so we need a way to pass information from &lt;Form /&gt; to &lt;App /&gt;. We can't pass data from child to parent in the same way as we pass data from parent to child using standard props. Instead, we can write a function in &lt;App /&gt; that will expect some data from our form as an input, then pass that function to &lt;Form /&gt; as a prop. This function-as-a-prop is called a callback prop. Once we have our callback prop, we can call it inside &lt;Form /&gt; to send the right data to &lt;App /&gt;.
+                </p>
+                <h3>Handling form submission via callbacks</h3>
+                <p>
+                    Inside the top of our App() component function, create a function named addTask() which has a single parameter of name:
+                </p>
+                <pre><code>
+    function addTask(name) {
+        alert(name);
+    }
+                </code></pre>
+                <p>
+                    Next, we'll pass addTask() into &lt;Form /&gt; as a prop. The prop can have whatever name you want, but pick a name you’ll understand later. Something like addTask works, because it matches the name of the function as well as what the function will do. Your &lt;Form /&gt; component call should be updated as follows:
+                </p>
+                <pre><code>
+    &lt;Form addTask={addTask} /&gt;
+                </code></pre>
+                <p>
+                    Finally, you can use this prop inside the handleSubmit() function in your &lt;Form /&gt; component! Update it as follows:
+                </p>
+                <pre><code>
+    function handleSubmit(e) {
+        e.preventDefault();
+        props.addTask("Say hello!");
+    }
+                </code></pre>
+                <p>
+                    Clicking on the "Add" button in your browser will prove that the addTask() callback function works, but it'd be nice if we could get the alert to show us what we're typing in our input field! This is what we'll do next.
+                </p>
+                <blockquote>
+                    <strong>Note:</strong> We decided to name our callback prop addTask to make it easy to understand what the prop will do. Another common convention you may well come across in React code is to prefix callback prop names with the word on, followed by the name of the event that will cause them to be run. For instance, we could have given our form a prop of onSubmit with the value of addTask.
+                </blockquote>
+            </article>
+        </section>
+        <section id="State_and_the_useState_hook" class="main-section">
+            <header>State and the useState hook</header>
+            <article>
+                <p>
+                    So far, we've used props to pass data through our components and this has served us just fine. Now that we're dealing with user input and data updates, however, we need something more.
+                </p>
+                <p>
+                    For one thing, props come from the parent of a component. Our &lt;Form /&gt; will not be inheriting a new name for our task; our &lt;input /&gt;  element lives directly inside of &lt;Form /&gt;, so &lt;Form/&gt; will be directly responsible for creating that new name. We can't ask &lt;Form /&gt; to spontaneously create its own props, but we can ask it to track some of its own data for us. Data such as this, which a component itself owns, is called state. State is another powerful tool for React because components not only own state, but can update it later. It's not possible to update the props a component receives; only to read them.
+                </p>
+                <p>
+                    React provides a variety of special functions that allow us to provide new capabilities to components, like state. These functions are called hooks, and the useState hook, as its name implies, is precisely the one we need in order to give our component some state.
+                </p>
+                <p>
+                    To use a React hook, we need to import it from the react module. In Form.js, change your very first line so that it reads like this:
+                </p>
+                <pre><code>
+    import React, { useState } from "react";
+                </code></pre>
+                <p>
+                    This allows us to import the useState() function by itself, and utilize it anywhere in this file.
+                </p>
+                <p>
+                    useState() creates a piece of state for a component, and its only parameter determines the initial value of that state. It returns two things: the state, and a function that can be used to update the state later.
+                </p>
+                <p>
+                    This is a lot to take in at once, so let's try it out. We're going to make ourselves a name state, and a function for updating the name state.
+                </p>
+                <p>
+                    Write the following above your handleSubmit() function, inside Form():
+                </p>
+                <pre><code>
+    const [name, setName] = useState('Use hooks!');
+                </code></pre>
+                <p>
+                    What's going on in this line of code?
+                </p>
+                <ul>
+                    <li>We are setting the initial name value as "Use hooks!".</li>
+                    <li>We are defining a function whose job is to modify name, called setName().</li>
+                    <li>useState() returns these two things, so we are using array destructuring to capture them both in separate variables.</li>
+                </ul>
+                <h3>Reading state</h3>
+                <p>
+                    You can see the name state in action right away. Add a value attribute to the form’s input, and set its value to name. Your browser will render "Use hooks!" inside the input.
+                </p>
+                <pre><code>
+    &lt;input
+        type="text"
+        id="new-todo-input"
+        className="input input__lg"
+        name="text"
+        autoComplete="off"
+        value={name}
+    /&gt;
+                </code></pre>
+                <p>
+                    Change "Use hooks!" to an empty string once you're done; this is what we want for our initial state.
+                </p>
+                <pre><code>
+    const [name, setName] = useState('');
+                </code></pre>
+                <h3>Reading user input</h3>
+                <p>
+                    Before we can change the value of name, we need to capture a user's input as they type. For this, we can listen to the onChange event. Let’s write a handleChange() function, and listen for it on the &lt;input /&gt; tag.
+                </p>
+                <pre><code>
+    // near the top of the `Form` component
+    function handleChange(e) {
+        console.log("Typing!");
+    }
+
+    // Down in the return statement
+    &lt;input
+        type="text"
+        id="new-todo-input"
+        className="input input__lg"
+        name="text"
+        autoComplete="off"
+        value={name}
+        onChange={handleChange}
+    /&gt;
+                </code></pre>
+                <p>
+                    Currently, your input’s value will not change as you type, but your browser will log the word "Typing!" to the JavaScript console, so we know our event listener is attached to the input. In order to change the input’s value, we have to use our handleChange() function to update our name state.
+                </p>
+                <p>
+                    To read the contents of the input field as they change, you can access the input’s value property. We can do this inside handleChange() by reading e.target.value. e.target represents the element that fired the change event — that’s our input. So, value is the text inside it.
+                </p>
+                <p>
+                    You can console.log() this value to see it in your browser’s console.
+                </p>
+                <pre><code>
+    function handleChange(e) {
+        console.log(e.target.value);
+    }
+                </code></pre>
+                <h3>Updating state</h3>
+                <p>
+                    Logging isn’t enough — we want to actually store the updated state of the name as the input value changes! Change the console.log() to setName(), as shown below:
+                </p>
+                <pre><code>
+    function handleChange(e) {
+        setName(e.target.value);
+    }
+                </code></pre>
+                <p>
+                    Now we need to change our handleSubmit() function so that it calls props.addTask with name as an argument — remember our callback prop? This will serve to send the task back to the App component, so we can add it to our list of tasks at some later date. As a matter of good practice, you should clear the input after your form submits, so we'll call setName() again with an empty string to do so:
+                </p>
+                <pre><code>
+    function handleSubmit(e) {
+        e.preventDefault();
+        props.addTask(name);
+        setName("");
+    }
+                </code></pre>
+                <p>
+                    At last, you can type something into the input field in your browser and click Add — whatever you typed will appear in an alert dialog.
+                </p>
+                <p>
+                    Your Form.js file should now read like this:
+                </p>
+                <pre><code>
+    import React, { useState } from "react";
+
+    function Form(props) {
+        const [name, setName] = useState("");
+
+        function handleChange(e) {
+            setName(e.target.value);
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            props.addTask(name);
+            setName("");
+        }
+        return (
+            &lt;form onSubmit={handleSubmit}&gt;
+            &lt;h2 className="label-wrapper"&gt;
+            &lt;label htmlFor="new-todo-input" className="label__lg"&gt;
+                What needs to be done?
+                &lt;/label&gt;
+                &lt;/h2&gt;
+                &lt;input
+                type="text"
+                id="new-todo-input"
+                className="input input__lg"
+                name="text"
+                autoComplete="off"
+                value={name}
+                onChange={handleChange}
+            /&gt;
+            &lt;button type="submit" className="btn btn__primary btn__lg"&gt;
+                Add
+                &lt;/button&gt;
+            &lt;/form&gt;
+        );
+    }
+
+    export default Form;
+                </code></pre>
+            </article>
+        </section>
+        <section id="Putting_it_all_together:_Adding_a_task" class="main-section">
+            <header>Putting it all together: Adding a task</header>
+            <article>
+                <p>
+                    Now that we've practiced with events, callback props, and hooks we're ready to write functionality that will allow a user to add a new task from their browser.
+                </p>
+                <h3>Tasks as state</h3>
+                <p>
+                    Import useState into App.js, so that we can store our tasks in state — update your React import line to the following:
+                </p>
+                <pre><code>
+    import React, { useState } from "react";
+                </code></pre>
+                <p>
+                    We want to pass props.tasks into the useState() hook – this will preserve its initial state. Add the following right at the top of your App() function definition:
+                </p>
+                <pre><code>
+    const [tasks, setTasks] = useState(props.tasks);
+                </code></pre>
+                <p>
+                    Now, we can change our taskList mapping so that it is the result of mapping tasks, instead of props.tasks. Your taskList constant declaration should now look like so:
+                </p>
+                <pre><code>
+    const taskList = tasks.map(task => (
+        &lt;Todo
+            id={task.id}
+            name={task.name}
+            completed={task.completed}
+            key={task.id}
+        /&gt;
+        )
+    );
+                </code></pre>
+                <h3>Adding a task</h3>
+                <p>
+                    We’ve now got a setTasks hook that we can use in our addTask() function to update our list of tasks. There’s one problem however: we can’t just pass the name argument of addTask() into setTasks, because tasks is an array of objects and name is a string. If we tried to do this, the array would be replaced with the string.
+                </p>
+                <p>
+                    First of all, we need to put name into an object that has the same structure as our existing tasks. Inside of the addTask() function, we will make a newTask object to add to the array.
+                </p>
+                <p>
+                    We then need to make a new array with this new task added to it and then update the state of the tasks data to this new state. To do this, we can use spread syntax to copy the existing array, and add our object at the end. We then pass this array into setTasks() to update the state.
+                </p>
+                <p>
+                    Putting that all together, your addTask() function should read like so:
+                </p>
+                <pre><code>
+    function addTask(name) {
+        const newTask = { id: "id", name: name, completed: false };
+        setTasks([...tasks, newTask]);
+    }
+                </code></pre>
+                <p>
+                    Now you can use the browser to add a task to our data! Type anything into the form and click "Add" (or press the Enter key) and you'll see your new todo item appear in the UI!
+                </p>
+                <p>
+                    However, we have another problem: our addTask() function is giving each task the same id. This is bad for accessibility, and makes it impossible for React to tell future tasks apart with the key prop. In fact, React will give you a warning in your DevTools console — "Warning: Encountered two children with the same key..."
+                </p>
+                <p>
+                    We need to fix this. Making unique identifiers is a hard problem – one for which the JavaScript community has written some helpful libraries. We’ll use nanoid because it's tiny, and it works.
+                </p>
+                <p>
+                    Make sure you’re in the root directory of your application and run the following terminal command:
+                </p>
+                <pre><code>
+    npm install nanoid
+                </code></pre>
+                <blockquote>
+                    <strong>Note:</strong> If you're using yarn, you'll need the following instead: yarn add nanoid
+                </blockquote>
+                <p>
+                    Now we can import nanoid into the top of App.js so we can use it to create unique IDs for our new tasks. First of all, include the following import line at the top of App.js:
+                </p>
+                <pre><code>
+    import { nanoid } from "nanoid";
+                </code></pre>
+                <p>
+                    Now let's update addTask() so that each task ID becomes a prefix todo- plus a unique string generated by nanoid. Update your newTask constant declaration to this:
+                </p>
+                <pre><code>
+    const newTask = { id: "todo-" + nanoid(), name: name, completed: false };
+                </code></pre>
+                <p>
+                    Save everything, and try your app again — now you can add tasks without getting that warning about duplicate IDs.
+                </p>
+            </article>
+        </section>
+        <section id="Detour:_counting_tasks" class="main-section">
+            <header>Detour: counting tasks</header>
+            <article>
+                <p>
+                    Now that we can add new tasks, you may notice a problem: our heading reads 3 tasks remaining, no matter how many tasks we have! We can fix this by counting the length of taskList and changing the text of our heading accordingly.
+                </p>
+                <p>
+                    Add this inside your App() definition, before the return statement:
+                </p>
+                <pre><code>
+    const headingText = `${taskList.length} tasks remaining`;
+                </code></pre>
+                <p>
+                    Hrm. This is almost right, except that if our list ever contains a single task, the heading will still use the word “tasks”. We can make this a variable, too. Update the code you just added as follows:
+                </p>
+                <pre><code>
+    const tasksNoun = taskList.length !== 1 ? 'tasks' : 'task';
+    const headingText = `${taskList.length} ${tasksNoun} remaining`;
+                </code></pre>
+                <p>
+                    Now you can replace the list heading's text content with the headingText variable. Update your &lt;h2&gt; like so:
+                </p>
+                <pre><code>
+    &lt;h2 id="list-heading"&gt;{headingText}&lt;h2/&gt;
+                </code></pre>
+            </article>
+        </section>
+        <section id="Completing_a_task" class="main-section">
+            <header>Completing a task</header>
+            <article>
+                <p>
+                    You might notice that, when you click on a checkbox, it checks and unchecks appropriately. As a feature of HTML, the browser knows how to remember which checkbox inputs are checked or unchecked without our help. This feature hides a problem, however: toggling a checkbox doesn't change the state in our React application. This means that the browser and our app are now out-of-sync. We have to write our own code to put the browser back in sync with our app.
+                </p>
+                <h3>Proving the bug</h3>
+                <p>
+                    Before we fix the problem, let's observe it happening.
+                </p>
+                <p>
+                    We'll start by writing a toggleTaskCompleted() function in our App() component. This function will have an id parameter, but we're not going to use it yet. For now, we'll log the first task in the array to the console – we're going to inspect what happens when we check or uncheck it in our browser:
+                </p>
+                <p>
+                    Add this just above your taskList constant declaration:
+                </p>
+                <pre><code>
+    function toggleTaskCompleted(id) {
+        console.log(tasks[0])
+    }
+                </code></pre>
+                <p>
+                    Next, we'll add toggleTaskCompleted to the props of each <Todo/> component rendered inside our taskList; update it like so:
+                </p>
+                <pre><code>
+    const taskList = tasks.map(task => (
+        &lt;Todo
+            id={task.id}
+            name={task.name}
+            completed={task.completed}
+            key={task.id}
+            toggleTaskCompleted={toggleTaskCompleted}
+        /&gt;
+    ));
+                </code></pre>
+                <p>
+                    Next, we'll add toggleTaskCompleted to the props of each <Todo/> component rendered inside our taskList; update it like so:
+                </p>
+                <pre><code>
+    const taskList = tasks.map(task => (
+        &lt;Todo
+            id={task.id}
+            name={task.name}
+            completed={task.completed}
+            key={task.id}
+            toggleTaskCompleted={toggleTaskCompleted}
+        /&gt;
+    ));
+                </code></pre>
+                <p>
+                    Next, go over to your Todo.js component and add an onChange handler to your <input /> element, which should use an anonymous function to call props.toggleTaskCompleted() with a parameter of props.id. The <input /> should now look like this:
+                </p>
+                <pre><code>
+    &lt;input
+        id={props.id}
+        type="checkbox"
+        defaultChecked={props.completed}
+        onChange={() =&gt; props.toggleTaskCompleted(props.id)}
+    /&gt;
+                </code></pre>
+                <p>
+                    Save everything and return to your browser and notice that our first task, Eat, is checked. Open your JavaScript console, then click on the checkbox next to Eat. It unchecks, as we expect. Your JavaScript console, however, will log something like this:
+                </p>
+                <pre><code>
+    Object { id: "task-0", name: "Eat", completed: true }
+                </code></pre>
+                <p>
+                    The checkbox unchecks in the browser, but our console tells us that Eat is still completed. We will fix that next!
+                </p>
+                <h3>Synchronizing the browser with our data</h3>
+                <p>
+                    Let’s revisit our toggleTaskCompleted() function in App.js. We want it to change the completed property of only the task that was toggled, and leave all the others alone. To do this, we'll map() over the task list and just change the one we completed.
+                </p>
+                <p>
+                    Update your toggleTaskCompleted() function to the following:
+                </p>
+                <pre><code>
+    function toggleTaskCompleted(id) {
+        const updatedTasks = tasks.map(task => {
+        // if this task has the same ID as the edited task
+        if (id === task.id) {
+            // use object spread to make a new object
+            // whose `completed` prop has been inverted
+            return {...task, completed: !task.completed}
+        }
+        return task;
+        });
+        setTasks(updatedTasks);
+    }
+                </code></pre>
+                <p>
+                    Here, we define an updatedTasks constant that maps over the original tasks array.  If the task’s id property matches the id provided to the function, we use object spread syntax  to create a new object, and toggle the checked property of that object before returning it. If it doesn’t match, we return the original object.
+                </p>
+                <p>
+                    Then we call setTasks() with this new array in order to update our state.
+                </p>
+            </article>
+        </section>
+        <section id="Deleting_a_task" class="main-section">
+            <header>Deleting a task</header>
+            <article>
+                <p>
+                    Deleting a task will follow a similar pattern to toggling its completed state: We need to define a function for updating our state, then pass that function into <Todo/> as a prop and call it when the right event happens.
+                </p>
+                <h3>The deleteTask callback prop</h3>
+                <p>
+                    Here we'll start by writing a deleteTask() function in your App component. Like toggleTaskCompleted(), this function will take an id parameter, and we will log that id to the console to start with. Add the following below toggleTaskCompleted():
+                </p>
+                <pre><code>
+    function deleteTask(id) {
+        console.log(id)
+    }
+                </code></pre>
+                <p>
+                    Next, add another callback prop to our array of <Todo /> components:
+                </p>
+                <pre><code>
+    const taskList = tasks.map(task => (
+        &lt;Todo
+            id={task.id}
+            name={task.name}
+            completed={task.completed}
+            key={task.id}
+            toggleTaskCompleted={toggleTaskCompleted}
+            deleteTask={deleteTask}
+        /&gt;
+    ));
+                </code></pre>
+                <p>
+                    In Todo.js, we want to call props.deleteTask() when the "Delete" button is pressed. deleteTask() needs to know the ID of the task that called it, so it can delete the correct task from the state
+                </p>
+                <p>
+                    Update the "Delete" button inside Todo.js, like so:
+                </p>
+                <pre><code>
+    &lt;button
+        type="button"
+        className="btn btn__danger"
+        onClick={() =&gt; props.deleteTask(props.id)}
+    &gt;
+        Delete &lt;span className="visually-hidden"&gt;{props.name}&lt;/span&gt;
+    &lt;/button&gt;
+                </code></pre>
+                <p>
+                    Now when you click on any of the "Delete" buttons in the app, your browser console should log the ID of the related task.
+                </p>
+            </article>
+        </section>
+        <section id="Deleting_tasks_from_state_and_UI" class="main-section">
+            <header>Deleting tasks from state and UI</header>
+            <article>
+                <p>
+                    Now that we know deleteTask() is invoked correctly, we can call our setTasks() hook in deleteTask() to actually delete that task from the app’s state as well as visually in the app UI. Since setTasks() expects an array as an argument, we should provide it with a new array that copies the existing tasks, excluding the task whose ID matches the one passed into deleteTask().
+                </p>
+                <p>
+                    This is a perfect opportunity to use Array.prototype.filter(). We can test each task, and exclude a task from the new array if its id prop matches the id parameter passed into deleteTask().
+                </p>
+                <p>
+                    Update the deleteTask() function inside your App.js file as follows:
+                </p>
+                <pre><code>
+    function deleteTask(id) {
+        const remainingTasks = tasks.filter(task => id !== task.id);
+        setTasks(remainingTasks);
+    }
+                </code></pre>
+                <p>
+                    Try your app out again. Now you should be able to delete a task from your app!
+                </p>
+            </article>
+        </section>
+        <section id="Reference" class="main-section">
+            <header>Reference</header>
+            <article>
+                <ul>
+                    <li>All the documentation in this page is taken from <a href="https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_interactivity_events_state" target="_blank">MDN</a></li>
+                </ul>
+            </article>
+        </section>
+    </main>
+
+    <!-- Run the tests -->
+    <script src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js'></script>
+</body>
+</html>
